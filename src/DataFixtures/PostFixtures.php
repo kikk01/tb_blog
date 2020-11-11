@@ -6,8 +6,15 @@ use App\Entity\Post;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
+/**
+ * Class PostFixtures
+ * @package App\DataFixtures
+ */
 class PostFixtures extends Fixture 
 {
+    /**
+     * @param ObjectManager $manager
+     */
     public function load(ObjectManager $manager)
     {
         for ($i = 1; $i <= 25; $i++) {
@@ -18,14 +25,13 @@ class PostFixtures extends Fixture
             
             $manager->persist($post);
 
-            for ($j = 1; $j <= 25; $j++) {
-                $comment = (new Comment())
-                    ->setAuthor("Author" . $i)
-                    ->setContent("Commentaire" . $i)
-                    ->setPost($post)
-                ;
+            for ($j = 1; $j <= 15; $j++) {
+                $comment = new Comment();
+                $comment->setAuthor("Author" . $i);
+                $comment->setContent("Commentaire" . $i);
+                $comment->setPost($post);
 
-                $manager->persist($post);
+                $manager->persist($comment);
             }
         }
 
