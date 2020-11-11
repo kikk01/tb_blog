@@ -9,4 +9,11 @@
         <small>{{ post.comments|length }} commentaire (s)</small>
         <a href="{{ path('blog_read', { id: post.id }) }}">Lire la suite</a>
     {% endfor %}
+    <ul>
+        {% for page in 1..pages %}
+            <li>
+                <a href="{{ path("blog", { page: page }) }}">{{ page }}</a>
+            </li>
+        {% endfor %}
+    </ul>
 {% endblock %}

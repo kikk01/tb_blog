@@ -33,4 +33,21 @@ class PostRepository extends ServiceEntityRepository
             ->getResult()
         ;
     }
+
+    /**
+     * return paginated posts with comments
+     *
+     * @param integer $page
+     * @param integer $limit
+     * @return array
+     */
+    public function getPaginatedPosts(int $page, int $limit): array
+    {
+        return $this->createQueryBuilder("p")
+            ->setMaxResults($limit)
+            ->setFirstResult(($page * $limit) - $limit)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }
