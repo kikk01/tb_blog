@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\PostRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Annotations\Annotation;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * @ORM\Entity(repositoryClass=PostRepository::class)
@@ -37,11 +39,18 @@ class Post
     private $content;
 
     /**
+     * @var Collection 
+     * @ORM\OneToMany(targetEntity="Comment", mappedBy="post")
+     */
+    private $comments;
+
+    /**
      * Post Constructeur
      * @throws \Exception
      */
     public function __construct() {
         $this->publishedAt = new \DateTimeImmutable();
+        $this->comments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -83,5 +92,15 @@ class Post
         $this->content = $content;
 
         return $this;
+    }
+
+    /**
+     * Get the value of comments
+     *
+     * @return  Collection
+     */ 
+    public function getComments() : Collection
+    {
+        return $this->comments;
     }
 }
