@@ -27,7 +27,10 @@ class CommentType extends AbstractType
                 "label" => "Pseudo :"
             ])
             ->add("content", TextareaType::class, [
-                "label" => "Votre message"
+                "label" => "Votre message",
+                "attr" => ["class" => "form-control"],
+                "row_attr" => ["class" => "form-group"],
+                "label_attr" => ["class" => "label_attr"]
             ])
         ;
     }
