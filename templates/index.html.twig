@@ -10,14 +10,17 @@
         <a href="{{ path('blog_read', { id: post.id }) }}">Lire la suite</a>
     {% endfor %}
     <ul>
-    <pre>
-    </pre>
+        {% if page > 1 %}
+            <li>
+                <a href="{{ path("blog", { page: 1 }) }}">Première page</a>
+            </li>
+        {% endif %}
         {% if page > 1 %}
             <li>
                 <a href="{{ path("blog", { page: page - 1 }) }}">Précédent</a>
             </li>
         {% endif %}
-        {% for p in 1..pages %}
+        {% for p in range %}
             <li>
                 <a href="{{ path("blog", { page: p }) }}">{{ p }}</a>
             </li>
@@ -25,6 +28,11 @@
         {% if page < pages %}
             <li>
                 <a href="{{ path("blog", { page: page + 1 }) }}">Suivant</a>
+            </li>
+        {% endif %}
+        {% if page < pages %}
+            <li>
+                <a href="{{ path("blog", { page: pages }) }}">Dernière page</a>
             </li>
         {% endif %}
     </ul>
