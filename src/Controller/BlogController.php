@@ -9,6 +9,7 @@ use App\Form\CommentType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class BlogController extends AbstractController
 {
@@ -21,13 +22,14 @@ class BlogController extends AbstractController
     {
         $limit = $request->get("limit", 10);
         $page = $request->get("page", 1);
-        $total = $this->getDoctrine()->getManager()->getRepository(Post::class)->count([]);
+
+        /** @var Paginator $posts */
         $posts = $this->getDoctrine()->getManager()->getRepository(Post::class)->getPaginatedPosts(
             $page,
             $limit
         );
 
-        $pages = ceil($total / 10);
+        $pages = ceil($posts->count() / $limit);
         $range = range(
             max($page - 3, 1),
             min($page + 3, $pages)
