@@ -10,10 +10,22 @@
         <a href="{{ path('blog_read', { id: post.id }) }}">Lire la suite</a>
     {% endfor %}
     <ul>
-        {% for page in 1..pages %}
+    <pre>
+    </pre>
+        {% if page > 1 %}
             <li>
-                <a href="{{ path("blog", { page: page }) }}">{{ page }}</a>
+                <a href="{{ path("blog", { page: page - 1 }) }}">Précédent</a>
+            </li>
+        {% endif %}
+        {% for p in 1..pages %}
+            <li>
+                <a href="{{ path("blog", { page: p }) }}">{{ p }}</a>
             </li>
         {% endfor %}
+        {% if page < pages %}
+            <li>
+                <a href="{{ path("blog", { page: page + 1 }) }}">Suivant</a>
+            </li>
+        {% endif %}
     </ul>
 {% endblock %}

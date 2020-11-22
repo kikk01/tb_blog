@@ -14,18 +14,25 @@ class BlogController extends AbstractController
 {
     /**
      * @Route("/", name="blog")
+     * @param Request $request
+     * @return Response
      */
     public function index(Request $request): Response
     {
+        $limit = $request->get("limit", 10);
+        $page = $request->get("page", 1);
         $total = $this->getDoctrine()->getManager()->getRepository(Post::class)->count([]);
         $posts = $this->getDoctrine()->getManager()->getRepository(Post::class)->getPaginatedPosts(
-            $request->get("page", 1), 10
+            $page,
+            $limit
         );
 
         $pages = ceil($total / 10);
         return $this->render('index.html.twig', [
             'posts' => $posts,
-            'pages' => $pages
+            'pages' => $pages,
+            'page' => $page,
+            'limit' => $limit
         ]);
     }
 
