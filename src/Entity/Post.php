@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\PostRepository;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -18,34 +19,34 @@ class Post
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private ?int $id;
 
     /**
-     * @var string
+     * @var string|null
      * @ORM\Column
      * @Assert\NotBlank
      */
-    private $title;
+    private ?string $title = null;
 
     /**
      * @var \DateTimeImmutable
      * @ORM\Column(type="datetime_immutable")
      */
-    private $publishedAt;
+    private DateTimeImmutable $publishedAt;
 
     /**
-     * @var string
+     * @var string|null
      * @ORM\Column(type="text")
      * @Assert\NotBlank
      * @Assert\Length(min=10)
      */
-    private $content;
+    private ?string $content = null;
 
     /**
      * @var Collection 
      * @ORM\OneToMany(targetEntity="Comment", mappedBy="post")
      */
-    private $comments;
+    private Collection $comments;
 
     /**
      * Post Constructeur
