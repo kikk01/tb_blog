@@ -6,6 +6,7 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Comment;
 use App\Entity\Post;
 use App\Form\CommentType;
+use App\Form\PostType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -47,6 +48,7 @@ class BlogController extends AbstractController
     /**
      * @Route("/article-{id}", name="blog_read")
      * @param Post $post
+     * @param Request $request
      * @return Response
      */
     public function read(Post $post, Request $request) : Response
@@ -62,6 +64,28 @@ class BlogController extends AbstractController
         return $this->render('read.html.twig', [
             'post' => $post,
             "form" => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/publier-article", name="blog_create")
+     * @param Request $request
+     * @return Response
+     */
+    public function create(Request $request) : Response
+    {
+        $post = new Post();
+
+        $form = $this->createForm(PostType::class, $post)->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->getDoctrine()->getManager()->persist($post);
+            $this->getDoctrine()->getManager()->flush();
+            return $this->redirectToRoute("blog_read", ["id" => $post->getId()]);
+        }
+
+        return $this->render('create.html.twig', [
+            'form' => $form->createView()
         ]);
     }
 }

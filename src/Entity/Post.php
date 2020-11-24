@@ -2,11 +2,10 @@
 
 namespace App\Entity;
 
-use App\Repository\PostRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Annotations\Annotation;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=PostRepository::class)
@@ -23,6 +22,7 @@ class Post
     /**
      * @var string
      * @ORM\Column
+     * @Assert\NotBlank
      */
     private $title;
 
@@ -35,6 +35,8 @@ class Post
     /**
      * @var string
      * @ORM\Column(type="text")
+     * @Assert\NotBlank
+     * @Assert\Length(min=10)
      */
     private $content;
 
