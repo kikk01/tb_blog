@@ -36,6 +36,12 @@ class Post
 
     /**
      * @var string|null
+     * @ORM\Column
+     */
+    private ?string $image = null;
+
+    /**
+     * @var string|null
      * @ORM\Column(type="text")
      * @Assert\NotBlank
      * @Assert\Length(min=10)
@@ -86,6 +92,8 @@ class Post
         return $this;
     }
 
+    
+
     public function getContent(): string
     {
         return $this->content;
@@ -106,5 +114,29 @@ class Post
     public function getComments() : Collection
     {
         return $this->comments;
+    }
+
+    /**
+     * Get the value of image
+     *
+     * @return  string|null
+     */ 
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+    /**
+     * Set the value of image
+     *
+     * @param  string|null  $image
+     *
+     * @return  self
+     */ 
+    public function setImage($image)
+    {
+        $this->image = $image;
+
+        return $this;
     }
 }

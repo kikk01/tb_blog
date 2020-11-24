@@ -21,6 +21,7 @@ class PostFixtures extends Fixture
             $post = (new Post())
                 ->setTitle("Article N°" . $i)
                 ->setContent("Content" . $i)
+                ->setImage('http://via.placeholder.com/400x300')
             ;
             
             $manager->persist($post);
