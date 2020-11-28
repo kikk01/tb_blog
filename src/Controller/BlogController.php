@@ -81,7 +81,9 @@ class BlogController extends AbstractController
     {
         $post = new Post();
 
-        $form = $this->createForm(PostType::class, $post)->handleRequest($request);
+        $form = $this->createForm(PostType::class, $post, [
+            'validation_groups' => ['Default' => 'create']
+        ])->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var UploadedFile $file */
@@ -115,11 +117,27 @@ class BlogController extends AbstractController
      * @param Post $post
      * @return Response
      */
-    public function update(Post $post, Request $request) : Response
+    public function update(Post $post, Request $request, SluggerInterface $slugger, string $uploadsAbsoluteDir, string $uploadsRelativeDir) : Response
     {
         $form = $this->createForm(PostType::class, $post)->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var UploadedFile $file */
+            $file = $form->get('file')->getData();
+
+            if ($file !== null) {
+                $filename = sprintf(
+                    '%s_%s.%s',
+                    $slugger->slug($file->getClientOriginalName()),
+                    uniqid(),
+                    $file->getClientOriginalExtension()
+                );
+                
+                $file->move($uploadsAbsoluteDir, $filename);
+
+                $post->setImage($uploadsRelativeDir . '/' . $filename);                
+            }
+
             $this->getDoctrine()->getManager()->flush();
             return $this->redirectToRoute("blog_read", ["id" => $post->getId()]);
         }

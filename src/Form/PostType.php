@@ -30,10 +30,13 @@ class PostType extends AbstractType
                 'label' => 'Article'
             ])
             ->add('file', FileType::class,  [
+                'required' => false,
                 'mapped' => false,
                 'constraints' => [
                     new Image(),
-                    new NotNull()
+                    new NotNull([
+                        "groups" => 'create'
+                    ])
                 ]
             ])
         ;
