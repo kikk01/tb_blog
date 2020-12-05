@@ -40,7 +40,7 @@ class User implements UserInterface
 
     /**
      * @var DateTimeImmutable
-     * @ORM\Column(type='datetime_immutable')
+     * @ORM\Column(type="datetime_immutable")
      */
     private DateTimeImmutable $registratedAt;
 
