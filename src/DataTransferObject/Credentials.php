@@ -22,7 +22,7 @@ class Credentials
      */
     private ?string $password = null;
 
-    public function __construct(?string $username)
+    public function __construct(?string $username = null)
     {
         $this->username = $username;
     }
