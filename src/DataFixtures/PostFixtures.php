@@ -4,13 +4,14 @@ namespace App\DataFixtures;
 use App\Entity\Comment;
 use App\Entity\Post;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
 /**
  * Class PostFixtures
  * @package App\DataFixtures
  */
-class PostFixtures extends Fixture 
+class PostFixtures extends Fixture implements DependentFixtureInterface
 {
     /**
      * @param ObjectManager $manager
@@ -21,6 +22,7 @@ class PostFixtures extends Fixture
             $post = (new Post())
                 ->setTitle("Article N°" . $i)
                 ->setContent("Content" . $i)
+                ->setUser($this->getReference(sprintf('user-%d', ($i % 10) + 1)))
                 ->setImage('http://via.placeholder.com/400x300')
             ;
             
@@ -37,5 +39,13 @@ class PostFixtures extends Fixture
         }
 
         $manager->flush();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getDependencies() : array
+    {
+        return [UserFixtures::class];
     }
 }

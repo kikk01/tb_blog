@@ -49,6 +49,12 @@ class Post
     private ?string $content = null;
 
     /**
+     * @var User
+     * @ORM\ManyToOne(targetEntity="User")
+     */
+    private User $user;
+
+    /**
      * @var Collection 
      * @ORM\OneToMany(targetEntity="Comment", mappedBy="post")
      */
@@ -136,6 +142,18 @@ class Post
     public function setImage($image)
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }

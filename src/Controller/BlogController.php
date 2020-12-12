@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\String\Slugger\SluggerInterface;
 
 class BlogController extends AbstractController
 {
@@ -78,7 +77,10 @@ class BlogController extends AbstractController
      */
     public function create(Request $request, UploaderInterface $uploader) : Response
     {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
         $post = new Post();
+        $post->setUser($this->getUser());
 
         $form = $this->createForm(PostType::class, $post, [
             'validation_groups' => ['Default' => 'create']
