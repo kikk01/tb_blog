@@ -21,10 +21,10 @@ class Comment
     private ?int $id;
 
     /**
-     * @var string
-     * @ORM\Column
-     * @Assert\NotBlank
-     * @Assert\Length(min=2)
+     * @var string|null
+     * @ORM\Column(nullable=true)
+     * @Assert\NotBlank(groups={"anonymous"})
+     * @Assert\Length(min=2, groups={"anonymous"})
      */
     private ?string $author = null;
 
@@ -49,6 +49,12 @@ class Comment
     private $post;
 
     /**
+     * @var null|User
+     * @ORM\ManyToOne(targetEntity="User")
+     */
+    private ?User $user = null;
+
+    /**
      * Comment Constructeur
      * @throws \Exception
      */
@@ -62,25 +68,6 @@ class Comment
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getAuthor(): ?string
-    {
-        return $this->author;
-    }
-
-    /**
-     * @param string $author
-     * @return self
-     */
-    public function setAuthor(string $author): self
-    {
-        $this->author = $author;
-
-        return $this;
     }
 
     /**
@@ -135,5 +122,54 @@ class Comment
     public function setPost(Post $post): void
     {
         $this->post = $post;
+    }
+    
+
+    /**
+     * Get the value of user
+     *
+     * @return  null|User
+     */ 
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * Set the value of user
+     *
+     * @param  null|User  $user
+     *
+     * @return  self
+     */ 
+    public function setUser($user)
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of author
+     *
+     * @return  string|null
+     */ 
+    public function getAuthor()
+    {
+        return $this->author;
+    }
+
+    /**
+     * Set the value of author
+     *
+     * @param  string|null  $author
+     *
+     * @return  self
+     */ 
+    public function setAuthor($author)
+    {
+        $this->author = $author;
+
+        return $this;
     }
 }

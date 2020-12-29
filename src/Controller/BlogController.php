@@ -7,13 +7,13 @@ use App\Entity\Comment;
 use App\Entity\Post;
 use App\Form\CommentType;
 use App\Form\PostType;
+use App\Security\Voter\PostVoter;
 use App\Uploader\UploaderInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\String\Slugger\SluggerInterface;
 
 class BlogController extends AbstractController
 {
@@ -58,7 +58,14 @@ class BlogController extends AbstractController
     {
         $comment = new Comment();
         $comment->setPost($post);
-        $form = $this->createForm(CommentType::class, $comment)->handleRequest($request);
+
+        if ($this->isGranted("ROLE_USER")) {
+            $comment->setUser($this->getUser());
+        }
+
+        $form = $this->createForm(CommentType::class, $comment, [
+            "validation_groups" => $this->isGranted("ROLE_USER") ? "Default" : ["Default", "anonymous"]
+        ])->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->persist($comment);
             $this->getDoctrine()->getManager()->flush();
@@ -78,7 +85,10 @@ class BlogController extends AbstractController
      */
     public function create(Request $request, UploaderInterface $uploader) : Response
     {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
         $post = new Post();
+        $post->setUser($this->getUser());
 
         $form = $this->createForm(PostType::class, $post, [
             'validation_groups' => ['Default' => 'create']
@@ -109,6 +119,8 @@ class BlogController extends AbstractController
      */
     public function update(Post $post, Request $request, UploaderInterface $uploader) : Response
     {
+        $this->denyAccessUnlessGranted(PostVoter::EDIT, $post);
+
         $form = $this->createForm(PostType::class, $post)->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
