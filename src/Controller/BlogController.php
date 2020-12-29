@@ -7,6 +7,7 @@ use App\Entity\Comment;
 use App\Entity\Post;
 use App\Form\CommentType;
 use App\Form\PostType;
+use App\Handler\CommentHandler;
 use App\Security\Voter\PostVoter;
 use App\Uploader\UploaderInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -54,7 +55,7 @@ class BlogController extends AbstractController
      * @param Request $request
      * @return Response
      */
-    public function read(Post $post, Request $request) : Response
+    public function read(Post $post, Request $request, CommentHandler $commentHandler) : Response
     {
         $comment = new Comment();
         $comment->setPost($post);
@@ -63,17 +64,14 @@ class BlogController extends AbstractController
             $comment->setUser($this->getUser());
         }
 
-        $form = $this->createForm(CommentType::class, $comment, [
-            "validation_groups" => $this->isGranted("ROLE_USER") ? "Default" : ["Default", "anonymous"]
-        ])->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->persist($comment);
-            $this->getDoctrine()->getManager()->flush();
+        $options = ["validation_groups" => $this->isGranted("ROLE_USER") ? "Default" : ["Default", "anonymous"]];
+        if ($commentHandler->handle($request, $comment, $options)) {
             return $this->redirectToRoute("blog_read", ["id" => $post->getId()]);
         }
+
         return $this->render('blog/read.html.twig', [
             'post' => $post,
-            "form" => $form->createView()
+            "form" => $commentHandler->createView()
         ]);
     }
 
