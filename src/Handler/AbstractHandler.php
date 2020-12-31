@@ -22,7 +22,7 @@ abstract class AbstractHandler implements HandlerInterface
     /**
      * @var FormInterface
      */
-    private FormInterface $form;
+    protected FormInterface $form;
 
     /**
      *
