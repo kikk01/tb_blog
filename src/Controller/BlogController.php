@@ -62,11 +62,8 @@ class BlogController extends AbstractController
         $comment = new Comment();
         $comment->setPost($post);
 
-        if ($this->isGranted("ROLE_USER")) {
-            $comment->setUser($this->getUser());
-        }
-
         $options = ["validation_groups" => $this->isGranted("ROLE_USER") ? "Default" : ["Default", "anonymous"]];
+
         if ($commentHandler->handle($request, $comment, $options)) {
             return $this->redirectToRoute("blog_read", ["id" => $post->getId()]);
         }

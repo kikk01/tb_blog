@@ -2,10 +2,13 @@
 
 namespace App\Handler;
 
+use App\Event\ReverseEvent;
+use App\Event\TransferEvent;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * class AbstractHandler
@@ -13,6 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
  */
 abstract class AbstractHandler implements HandlerInterface
 {
+    private EventDispatcherInterface $eventDispatcher;
 
     /**
      * @var FormFactoryInterface
@@ -23,6 +27,8 @@ abstract class AbstractHandler implements HandlerInterface
      * @var FormInterface
      */
     protected FormInterface $form;
+
+    abstract protected function getDataTransferObject(): object;
 
     /**
      *
@@ -38,8 +44,14 @@ abstract class AbstractHandler implements HandlerInterface
     abstract protected function process($data): void;
 
     /**
-     * Set the value of formFactory
-     *
+     * @required
+     */ 
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
+    {
+        $this->eventDispatcher = $eventDispatcher;
+    }
+
+    /**
      * @required
      * @param  FormFactoryInterface  $formFactory
      *
@@ -53,12 +65,17 @@ abstract class AbstractHandler implements HandlerInterface
     /**
      * @inheritDoc
      */
-    public function handle(Request $request, $data, array $options = []): bool
+    public function handle(Request $request, object $originalData, array $options = []): bool
     {
+        $data = $this->getDataTransferObject();
+
+        $this->eventDispatcher->dispatch(new TransferEvent($originalData, $data), TransferEvent::NAME);
+
         $this->form = $this->formFactory->create($this->getFormType(), $data, $options)->handleRequest($request);
 
         if ($this->form->isSubmitted() && $this->form->isValid()) {
-            $this->process($data);
+            $this->eventDispatcher->dispatch(new ReverseEvent($data, $originalData), ReverseEvent::NAME);
+            $this->process($originalData);
             return true;
         }
 
@@ -73,4 +90,3 @@ abstract class AbstractHandler implements HandlerInterface
         return $this->form->createView();
     }
 }
-

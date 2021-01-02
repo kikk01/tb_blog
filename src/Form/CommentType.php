@@ -2,14 +2,13 @@
 
 namespace App\Form;
 
-use App\Entity\Comment;
+use App\DataTransferObject\Comment;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
  * Class CommentType
@@ -17,6 +16,13 @@ use Symfony\Component\Form\FormEvents;
  */
 class CommentType extends AbstractType
 {
+    private AuthorizationCheckerInterface $autorizationChecker;
+
+    public function __construct(AuthorizationCheckerInterface $autorizationChecker)
+    {
+        $this->autorizationChecker = $autorizationChecker;
+    }
+
     /**
      * @inheritdoc
      * @param FormBuilderInterface $builder
@@ -33,15 +39,11 @@ class CommentType extends AbstractType
             ])
         ;
 
-        $builder->addEventListener(FormEvents::PRE_SET_DATA, function(FormEvent $formEvent) {
-            if ($formEvent->getData()->getUser() !== null) {
-                return;
-            }
-
-            $formEvent->getForm()->add("author", TextType::class, [
+        if (!$this->autorizationChecker->isGranted("ROLE_USER")) {
+            $builder->add("author", TextType::class, [
                 "label" => "Pseudo :"
             ]);
-        });
+        }
     }
 
     /**
