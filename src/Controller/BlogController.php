@@ -5,17 +5,13 @@ namespace App\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Comment;
 use App\Entity\Post;
-use App\Form\CommentType;
-use App\Form\PostType;
 use App\Handler\CommentHandler;
 use App\Handler\PostHandler;
 use App\Security\Voter\PostVoter;
-use App\Uploader\UploaderInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class BlogController extends AbstractController
 {
