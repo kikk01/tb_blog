@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\User;
+use App\DataTransferObject\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
@@ -25,7 +25,7 @@ class UserType extends AbstractType
             ->add('email', EmailType::class, [
                 'label' => 'Email :'
             ])
-            ->add('plainPassword', RepeatedType::class, [
+            ->add('password', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'first_options' => [
                     'label' => 'mot de passe :'
@@ -37,8 +37,7 @@ class UserType extends AbstractType
                 'constraints' => [
                     new NotBlank(),
                     new Length(['min' => 8])
-                ],
-                'mapped' => false
+                ]
             ])
             ->add('pseudo', TextType::class, [
                 'label' => 'pseudo'
