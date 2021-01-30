@@ -23,16 +23,12 @@ class Comment
     /**
      * @var string|null
      * @ORM\Column(nullable=true)
-     * @Assert\NotBlank(groups={"anonymous"})
-     * @Assert\Length(min=2, groups={"anonymous"})
      */
     private ?string $author = null;
 
     /**
      * @var string
      * @ORM\Column(type="text")
-     * @Assert\NotBlank
-     * @Assert\Length(min=5)
      */
     private ?string $content = null;
 
