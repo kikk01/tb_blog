@@ -34,32 +34,8 @@ class BlogController
      */
     public function index(
         Request $request,
-        RepresentationFactoryInterface $representationFactory,
-        ListingPostsResponder $presenter): Response
-    {
-/*         $limit = $request->get("limit", 10);
-        $page = $request->get("page", 1);
-
-        /** @var Paginator $posts */
-       /* $posts = $entityManager->getRepository(Post::class)->getPaginatedPosts(
-            $page,
-            $limit
-        );
-
-        $pages = ceil($posts->count() / $limit);
-        $range = range(
-            max($page - 3, 1),
-            min($page + 3, $pages)
-        );
-
-        return new Response($this->twig->render('blog/index.html.twig', [
-            'posts' => $posts,
-            'pages' => $pages,
-            'page' => $page,
-            'limit' => $limit,
-            'range' => $range
-        ])); */
-
+        RepresentationFactoryInterface $representationFactory
+    ): Response {
         $representation = $representationFactory->create(PostPaginator::class)->handleRequest($request);
 
         return new Response($this->twig->render("blog/index.html.twig", [

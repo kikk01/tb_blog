@@ -40,7 +40,7 @@ class PostPaginator extends AbstractPaginator
      */
     public function configure(OptionsResolver $resolver): void
     {
-        $resolver->setDefault("route", "index");
+        $resolver->setDefault("route", "blog");
         $resolver->setDefault("field", "p.publishedAt");
         $resolver->setDefault("order", "desc");
     }

@@ -35,6 +35,6 @@ class RepresentationPass implements CompilerPassInterface
             $serviceMap[$container->getDefinition($id)->getClass()] = new Reference($id);
         }
 
-        $representationFactory->addArgument(ServiceLocatorTagPass::register($container, $serviceMap));
+        $representationFactory->setArgument(0, ServiceLocatorTagPass::register($container, $serviceMap));
     }
 }
