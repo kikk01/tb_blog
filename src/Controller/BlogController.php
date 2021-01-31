@@ -8,6 +8,8 @@ use App\Entity\Post;
 use App\Handler\CommentHandler;
 use App\Handler\PostHandler;
 use App\Paginator\PostPaginator;
+use App\Presenter\ListingPostsPresenterInterface;
+use App\Presenter\PresenterInterface;
 use App\Representation\RepresentationFactoryInterface;
 use App\Responder\ListingPostsResponder;
 use App\Security\Voter\PostVoter;
@@ -34,13 +36,12 @@ class BlogController
      */
     public function index(
         Request $request,
-        RepresentationFactoryInterface $representationFactory
+        RepresentationFactoryInterface $representationFactory,
+        ListingPostsPresenterInterface $presenter
     ): Response {
         $representation = $representationFactory->create(PostPaginator::class)->handleRequest($request);
 
-        return new Response($this->twig->render("blog/index.html.twig", [
-            'representation' => $representation->paginate()
-        ]));
+        return $presenter->present(new ListingPostsResponder($representation->paginate()));
     }
 
     /**
