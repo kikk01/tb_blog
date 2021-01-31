@@ -10,8 +10,11 @@ use App\Handler\PostHandler;
 use App\Paginator\PostPaginator;
 use App\Presenter\ListingPostsPresenterInterface;
 use App\Presenter\PresenterInterface;
+use App\Presenter\ReadPostPresenterInterface;
 use App\Representation\RepresentationFactoryInterface;
 use App\Responder\ListingPostsResponder;
+use App\Responder\ReadPostResponder;
+use App\Responder\RedirectReadPostResponder;
 use App\Security\Voter\PostVoter;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -46,16 +49,12 @@ class BlogController
 
     /**
      * @Route("/article-{id}", name="blog_read")
-     * @param Post $post
-     * @param Request $request
-     * @param CommentHandler $commentHandler
-     * @return Response
      */
     public function read(
         Post $post,
         Request $request,
         CommentHandler $commentHandler,
-        UrlGeneratorInterface $urlGenerator
+        ReadPostPresenterInterface $presenter
     ) : Response {
 
         $comment = new Comment();
@@ -64,13 +63,13 @@ class BlogController
         $options = ["validation_groups" => $this->isGranted("ROLE_USER") ? "Default" : ["Default", "anonymous"]];
 
         if ($commentHandler->handle($request, $comment, $options)) {
-            return new RedirectResponse($urlGenerator->generate("blog_read", ["id" => $post->getId()]));
+            return $presenter->redirect(new RedirectReadPostResponder($post));
         }
 
-        return new Response($this->twig->render('blog/read.html.twig', [
-            'post' => $post,
-            "form" => $commentHandler->createView()
-        ]));
+        return $presenter->present(new ReadPostResponder(
+            $post,
+            $commentHandler->createView()
+        ));
     }
 
     /**
