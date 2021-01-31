@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Post;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -42,14 +43,8 @@ class PostRepository extends ServiceEntityRepository
      * @param integer $limit
      * @return Paginator
      */
-    public function getPaginatedPosts(int $page, int $limit): Paginator
+    public function getPaginatedPosts(): QueryBuilder
     {
-        return new Paginator(
-            $this->createQueryBuilder("p")
-                ->addSelect('c')
-                ->leftJoin('p.comments', 'c')
-                ->setMaxResults($limit)
-                ->setFirstResult(($page * $limit) - $limit)
-        );
+        return $this->createQueryBuilder("p");
     }
 }

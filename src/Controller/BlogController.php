@@ -7,11 +7,12 @@ use App\Entity\Comment;
 use App\Entity\Post;
 use App\Handler\CommentHandler;
 use App\Handler\PostHandler;
+use App\Paginator\PostPaginator;
+use App\Representation\RepresentationFactoryInterface;
+use App\Responder\ListingPostsResponder;
 use App\Security\Voter\PostVoter;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Environment;
@@ -31,29 +32,14 @@ class BlogController
     /**
      * @Route("/", name="blog")
      */
-    public function index(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $limit = $request->get("limit", 10);
-        $page = $request->get("page", 1);
+    public function index(
+        Request $request,
+        RepresentationFactoryInterface $representationFactory
+    ): Response {
+        $representation = $representationFactory->create(PostPaginator::class)->handleRequest($request);
 
-        /** @var Paginator $posts */
-        $posts = $entityManager->getRepository(Post::class)->getPaginatedPosts(
-            $page,
-            $limit
-        );
-
-        $pages = ceil($posts->count() / $limit);
-        $range = range(
-            max($page - 3, 1),
-            min($page + 3, $pages)
-        );
-
-        return new Response($this->twig->render('blog/index.html.twig', [
-            'posts' => $posts,
-            'pages' => $pages,
-            'page' => $page,
-            'limit' => $limit,
-            'range' => $range
+        return new Response($this->twig->render("blog/index.html.twig", [
+            'representation' => $representation->paginate()
         ]));
     }
 
