@@ -4,6 +4,9 @@ namespace App\Controller;
 
 use App\DataTransferObject\Credentials;
 use App\Form\LoginType;
+use App\Presenter\LoginPresenter;
+use App\Presenter\LoginPresenterInterface;
+use App\Responder\LoginResponder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -24,7 +27,7 @@ class SecurityController
     public function login(
         AuthenticationUtils $authenticationUtils,
         FormFactoryInterface $formFactory,
-        Environment $twig
+        LoginPresenterInterface $presenter
     ): Response {
         $form = $formFactory->create(LoginType::class, new Credentials($authenticationUtils->getLastUsername()));
 
@@ -32,9 +35,7 @@ class SecurityController
             $form->addError(new FormError($authenticationUtils->getLastAuthenticationError()->getMessage()));
         }
         
-        return new Response($twig->render('security/login.html.twig', [
-            'form' => $form->createView()
-        ]));
+        return $presenter->present(new LoginResponder($form->createView()));
     }
 
         /**

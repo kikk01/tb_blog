@@ -6,7 +6,7 @@ use Symfony\Component\Form\FormView;
 
 class LoginResponder
 {
-    private FormView $form
+    private FormView $form;
 
     public function __construct(FormView $form)
     {
