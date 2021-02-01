@@ -3,7 +3,6 @@
 namespace App\Responder;
 
 use App\Entity\Post;
-use App\Representation\RepresentationInterface;
 use Symfony\Component\Form\FormView;
 
 class ReadPostResponder
@@ -20,11 +19,6 @@ class ReadPostResponder
     public function getPost()
     {
         return $this->post;
-    }
-
-    public function getRepresentation()
-    {
-        return $this->representation;
     }
 
     public function getForm()
