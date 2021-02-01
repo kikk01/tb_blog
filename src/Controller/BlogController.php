@@ -2,25 +2,28 @@
 
 namespace App\Controller;
 
-use Symfony\Component\HttpFoundation\Request;
-use App\Entity\Comment;
 use App\Entity\Post;
-use App\Handler\CommentHandler;
-use App\Handler\PostHandler;
-use App\Paginator\PostPaginator;
-use App\Presenter\ListingPostsPresenterInterface;
-use App\Presenter\PresenterInterface;
-use App\Presenter\ReadPostPresenterInterface;
-use App\Representation\RepresentationFactoryInterface;
-use App\Responder\ListingPostsResponder;
-use App\Responder\ReadPostResponder;
-use App\Responder\RedirectReadPostResponder;
-use App\Security\Voter\PostVoter;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Environment;
+use App\Entity\Comment;
+use App\Handler\PostHandler;
+use App\Handler\CommentHandler;
+use App\Paginator\PostPaginator;
+use App\Security\Voter\PostVoter;
+use App\Responder\ReadPostResponder;
+use App\Responder\CreatePostResponder;
+use App\Responder\UpdatePostResponder;
+use App\Responder\ListingPostsResponder;
+use App\Responder\RedirectReadPostResponder;
+use App\Presenter\ReadPostPresenterInterface;
+use Symfony\Component\HttpFoundation\Request;
+use App\Responder\RedirectCreatePostResponder;
+use App\Responder\RedirectUpdatePostResponder;
+use Symfony\Component\HttpFoundation\Response;
+use App\Presenter\CreatePostPresenterInterface;
+use App\Presenter\UpdatePostPresenterInterface;
+use Symfony\Component\Routing\Annotation\Route;
+use App\Presenter\ListingPostsPresenterInterface;
+use App\Representation\RepresentationFactoryInterface;
 
 class BlogController
 {
@@ -78,7 +81,7 @@ class BlogController
     public function create(
         Request $request,
         PostHandler $postHandler,
-        UrlGeneratorInterface $urlGenerator
+        CreatePostPresenterInterface $presenter
     ) : Response {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
@@ -89,12 +92,10 @@ class BlogController
         ];
 
         if ($postHandler->handle($request, $post, $options)) {
-            return new RedirectResponse($urlGenerator->generate("blog_read", ["id" => $post->getId()]));
+            return $presenter->redirect(new RedirectCreatePostResponder($post));
         }
 
-        return new Response($this->twig->render('blog/create.html.twig', [
-            'form' => $postHandler->createView()
-        ]));
+        return $presenter->present(new CreatePostResponder($postHandler->createView()));
     }
 
     /**
@@ -104,16 +105,14 @@ class BlogController
         Post $post,
         Request $request,
         PostHandler $postHandler,
-        UrlGeneratorInterface $urlGenerator
+        UpdatePostPresenterInterface $presenter
     ) : Response {
         $this->denyAccessUnlessGranted(PostVoter::EDIT, $post);
 
         if ($postHandler->handle($request, $post)) {
-            return new RedirectResponse($urlGenerator->generate("blog_read", ["id" => $post->getId()]));
+            return $presenter->redirect(new RedirectUpdatePostResponder($post));
         }
 
-        return new Response($this->twig->render('blog/update.html.twig', [
-            'form' => $postHandler->createView()
-        ]));
+        return $presenter->present(new UpdatePostResponder($postHandler->createView()));
     }
 }
