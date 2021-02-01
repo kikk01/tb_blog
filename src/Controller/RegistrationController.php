@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Handler\RegistrationHandler;
+use App\Presenter\RegistrationPresenterInterface;
+use App\Responder\RegistrationResponder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,16 +28,13 @@ class RegistrationController
     public function __invoke(
         Request $request,
         RegistrationHandler $registrationHandler,
-        Environment $twig,
-        UrlGeneratorInterface $urlGenerator
+        RegistrationPresenterInterface $presenter
     ) : Response {
 
         if ($registrationHandler->handle($request, New User)) {
-            return new RedirectResponse($urlGenerator->generate('security_login'));
+            return $presenter->redirect();
         }
 
-        return new Response ($twig->render('registration.html.twig', [
-            'form' => $registrationHandler->createView()
-        ]));
+        return $presenter->present(new RegistrationResponder($registrationHandler->createView()));
     }
 }
